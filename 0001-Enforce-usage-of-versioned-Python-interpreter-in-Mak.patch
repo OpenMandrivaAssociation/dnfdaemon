@@ -1,0 +1,107 @@
+From d0d016304478b467006ea6ddb61e3885f95db70e Mon Sep 17 00:00:00 2001
+From: Neal Gompa <ngompa13@gmail.com>
+Date: Sun, 22 Jul 2018 10:21:33 -0400
+Subject: [PATCH] Enforce usage of versioned Python interpreter in Makefiles
+
+The Makefiles for dnfdaemon previously assumed that '/usr/bin/python'
+pointed to Python 2. However, as support for Python 2 winds down
+over the next two years, this is not guaranteed to remain true.
+
+Consequently, Fedora has split out '/usr/bin/python' from the 'python2'
+package in order to enforce that packages do not use '/usr/bin/python'
+by default. Since the assumption was wrong in the Makefiles to begin
+with, it is better to go ahead and fix it in the Makefiles.
+
+Reference: https://fedoraproject.org/wiki/Changes/Move_usr_bin_python_into_separate_package
+---
+ Makefile                         |  4 ++--
+ python/dnfdaemon/Makefile        | 14 +++++++-------
+ python/dnfdaemon/client/Makefile | 14 +++++++-------
+ 3 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 12d1c82..bb96c2b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -87,10 +87,10 @@ run-tests-unit: FORCE
+ 	@PYTHONPATH=$(TESTLIBS) nosetests-$(PYVER3) -v -s test/test_common.py
+ 
+ instdeps:
+-	sudo dnf install python-nose python3-gobject pygobject3	python3-nose
++	sudo dnf install python2-nose python3-gobject pygobject3 python3-nose
+ 
+ get-builddeps:
+-	sudo dnf install perl-TimeDate gettext intltool rpmdevtools python-devel python3-devel python3-nose tito
++	sudo dnf install perl-TimeDate gettext intltool rpmdevtools python2-devel python3-devel python3-nose tito
+ 	
+ 
+ build-setup:
+diff --git a/python/dnfdaemon/Makefile b/python/dnfdaemon/Makefile
+index 2e6b51b..15b22c7 100644
+--- a/python/dnfdaemon/Makefile
++++ b/python/dnfdaemon/Makefile
+@@ -1,11 +1,11 @@
+-PYTHON=python
++PYTHON2=python2
+ PYTHON3=python3
+ PACKAGE = dnfdaemon
+ PYFILES = $(wildcard *.py)
+-PYVER := $(shell $(PYTHON) -c 'import sys; print("%.3s" %(sys.version))')
+-PYSYSDIR := $(shell $(PYTHON) -c 'import sys; print(sys.prefix)')
+-PYLIBDIR = $(PYSYSDIR)/lib/python$(PYVER)
+-PKGDIR = $(PYLIBDIR)/site-packages/$(PACKAGE)
++PYVER2 := $(shell $(PYTHON2) -c 'import sys; print("%.3s" %(sys.version))')
++PYSYSDIR2 := $(shell $(PYTHON2) -c 'import sys; print(sys.prefix)')
++PYLIBDIR2 = $(PYSYSDIR2)/lib/python$(PYVER2)
++PKGDIR2 = $(PYLIBDIR2)/site-packages/$(PACKAGE)
+ PYVER3 := $(shell $(PYTHON3) -c 'import sys; print("%.3s" %(sys.version))')
+ PYSYSDIR3 := $(shell $(PYTHON3) -c 'import sys; print(sys.prefix)')
+ PYLIBDIR3 = $(PYSYSDIR3)/lib/python$(PYVER3)
+@@ -19,9 +19,9 @@ clean:
+ 	
+ 
+ install:
+-	mkdir -p $(DESTDIR)/$(PKGDIR)
++	mkdir -p $(DESTDIR)/$(PKGDIR2)
+ 	mkdir -p $(DESTDIR)/$(PKGDIR3)
+ 	for p in $(PYFILES) ; do \
+-		install -m 644 $$p $(DESTDIR)/$(PKGDIR)/$$p; \
++		install -m 644 $$p $(DESTDIR)/$(PKGDIR2)/$$p; \
+ 		install -m 644 $$p $(DESTDIR)/$(PKGDIR3)/$$p; \
+ 	done
+diff --git a/python/dnfdaemon/client/Makefile b/python/dnfdaemon/client/Makefile
+index 5b034d2..7f01919 100644
+--- a/python/dnfdaemon/client/Makefile
++++ b/python/dnfdaemon/client/Makefile
+@@ -1,11 +1,11 @@
+-PYTHON=python
++PYTHON2=python2
+ PYTHON3=python3
+ PACKAGE = dnfdaemon/client
+ PYFILES = $(wildcard *.py)
+-PYVER := $(shell $(PYTHON) -c 'import sys; print("%.3s" %(sys.version))')
+-PYSYSDIR := $(shell $(PYTHON) -c 'import sys; print(sys.prefix)')
+-PYLIBDIR = $(PYSYSDIR)/lib/python$(PYVER)
+-PKGDIR = $(PYLIBDIR)/site-packages/$(PACKAGE)
++PYVER2 := $(shell $(PYTHON2) -c 'import sys; print("%.3s" %(sys.version))')
++PYSYSDIR2 := $(shell $(PYTHON2) -c 'import sys; print(sys.prefix)')
++PYLIBDIR2 = $(PYSYSDIR2)/lib/python$(PYVER2)
++PKGDIR2 = $(PYLIBDIR2)/site-packages/$(PACKAGE)
+ PYVER3 := $(shell $(PYTHON3) -c 'import sys; print("%.3s" %(sys.version))')
+ PYSYSDIR3 := $(shell $(PYTHON3) -c 'import sys; print(sys.prefix)')
+ PYLIBDIR3 = $(PYSYSDIR3)/lib/python$(PYVER3)
+@@ -19,9 +19,9 @@ clean:
+ 	
+ 
+ install:
+-	mkdir -p $(DESTDIR)/$(PKGDIR)
++	mkdir -p $(DESTDIR)/$(PKGDIR2)
+ 	mkdir -p $(DESTDIR)/$(PKGDIR3)
+ 	for p in $(PYFILES) ; do \
+-		install -m 644 $$p $(DESTDIR)/$(PKGDIR)/$$p; \
++		install -m 644 $$p $(DESTDIR)/$(PKGDIR2)/$$p; \
+ 		install -m 644 $$p $(DESTDIR)/$(PKGDIR3)/$$p; \
+ 	done
+-- 
+2.17.1
+

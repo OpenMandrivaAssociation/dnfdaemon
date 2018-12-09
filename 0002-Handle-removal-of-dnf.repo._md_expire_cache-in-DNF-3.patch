@@ -1,0 +1,38 @@
+From 3bcd84d0fb2939fab2569f53f56e1a90716c3810 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Mon, 17 Sep 2018 17:12:53 -0700
+Subject: [PATCH 1/2] Handle removal of dnf.repo._md_expire_cache() in DNF 3.4
+
+DNF 3.4 removed _md_expire_cache(), which we were still using.
+Let's follow how upstream replaced it, by using the expire()
+method of the underlying librepo repo object...unfortunately
+this is still using private interfaces, but I don't see a way
+to do it using public ones.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ python/dnfdaemon/server/backend.py | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/python/dnfdaemon/server/backend.py b/python/dnfdaemon/server/backend.py
+index 4c13ced..5e55dba 100644
+--- a/python/dnfdaemon/server/backend.py
++++ b/python/dnfdaemon/server/backend.py
+@@ -61,7 +61,13 @@ class DnfBase(dnf.Base):
+     def expire_cache(self):
+         """Make the current cache expire"""
+         for repo in self.repos.iter_enabled():
+-            repo._md_expire_cache()
++            # see https://bugzilla.redhat.com/show_bug.cgi?id=1629378
++            try:
++                # works up to dnf 3.4 (3.4 took it away)
++                repo._md_expire_cache()
++            except AttributeError:
++                # works from libdnf 0.18.0 (I think)
++                repo._repo.expire()
+ 
+     def setup_base(self):
+         """Setup dnf Sack and init packages helper"""
+-- 
+2.19.0
+
