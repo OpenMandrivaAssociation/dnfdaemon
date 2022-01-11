@@ -13,7 +13,7 @@ BuildArch:	noarch
 BuildRequires:	pkgconfig(python3)
 BuildRequires:	python2
 BuildRequires:	make
-BuildRequires:	systemd-macros
+BuildRequires:	systemd-rpm-macros
 Requires:	python-%{name} = %{EVRD}
 
 %description
