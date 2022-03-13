@@ -1,6 +1,6 @@
 Summary:	DBus daemon for doing package action with the dnf package manager
 Name:		dnfdaemon
-Version:	0.3.19
+Version:	0.3.20
 Release:	5
 License:	GPLv2+
 Group:		System/Configuration
@@ -11,7 +11,7 @@ Patch1:		https://src.fedoraproject.org/rpms/dnfdaemon/raw/master/f/0002-Handle-r
 Patch2:		https://src.fedoraproject.org/rpms/dnfdaemon/raw/master/f/0003-Handle-additional-DNF-transaction-callback-actions-i.patch
 BuildArch:	noarch
 BuildRequires:	pkgconfig(python3)
-BuildRequires:	python2
+# BuildRequires:	python2
 BuildRequires:	make
 BuildRequires:	systemd-rpm-macros
 Requires:	python-%{name} = %{EVRD}
