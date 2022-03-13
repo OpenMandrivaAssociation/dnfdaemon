@@ -1,7 +1,7 @@
 Summary:	DBus daemon for doing package action with the dnf package manager
 Name:		dnfdaemon
 Version:	0.3.20
-Release:	5
+Release:	1
 License:	GPLv2+
 Group:		System/Configuration
 Url:		https://github.com/manatools/dnfdaemon
