@@ -1,17 +1,14 @@
 Summary:	DBus daemon for doing package action with the dnf package manager
 Name:		dnfdaemon
-Version:	0.3.19
-Release:	5
+Version:	0.3.20
+Release:	1
 License:	GPLv2+
 Group:		System/Configuration
 Url:		https://github.com/manatools/dnfdaemon
 Source0:	https://github.com/manatools/dnfdaemon/releases/download/dnfdaemon-%{version}/dnfdaemon-%{version}.tar.xz
-Patch0:		https://src.fedoraproject.org/rpms/dnfdaemon/raw/master/f/0001-Enforce-usage-of-versioned-Python-interpreter-in-Mak.patch
-Patch1:		https://src.fedoraproject.org/rpms/dnfdaemon/raw/master/f/0002-Handle-removal-of-dnf.repo._md_expire_cache-in-DNF-3.patch
-Patch2:		https://src.fedoraproject.org/rpms/dnfdaemon/raw/master/f/0003-Handle-additional-DNF-transaction-callback-actions-i.patch
+Patch0:		dnfdaemon-0.3.20-python-3.10+.patch
 BuildArch:	noarch
 BuildRequires:	pkgconfig(python3)
-BuildRequires:	python2
 BuildRequires:	make
 BuildRequires:	systemd-rpm-macros
 Requires:	python-%{name} = %{EVRD}
@@ -35,9 +32,6 @@ Python 3 API for communicating with %{name}
 mkdir -p %{buildroot}/lib
 mv %{buildroot}%{_prefix}/lib/systemd %{buildroot}/lib
 
-# Death to Python 2!
-rm -rf %{buildroot}%{py2_puresitedir}
-
 %files
 %doc README.md ChangeLog
 %license COPYING
@@ -48,9 +42,9 @@ rm -rf %{buildroot}%{py2_puresitedir}
 %{_datadir}/polkit-1/actions/*
 # this should not be edited by the user, so no %%config
 %{_sysconfdir}/dbus-1/system.d/*
-%dir %{py_puresitedir}/%{name}
-%{py_puresitedir}/%{name}/__*
-%{py_puresitedir}/%{name}/server
+%dir %{python_sitelib}/%{name}
+%{python_sitelib}/%{name}/__init__.py
+%{python_sitelib}/%{name}/server
 
 %files -n python-%{name}
-%{py_puresitedir}/%{name}/client
+%{python_sitelib}/%{name}/client
