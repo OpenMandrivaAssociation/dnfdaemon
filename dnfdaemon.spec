@@ -1,7 +1,7 @@
 Summary:	DBus daemon for doing package action with the dnf package manager
 Name:		dnfdaemon
 Version:	0.3.20
-Release:	2
+Release:	3
 License:	GPLv2+
 Group:		System/Configuration
 Url:		https://github.com/manatools/dnfdaemon
@@ -29,8 +29,6 @@ Python 3 API for communicating with %{name}
 
 %install
 %make_install DATADIR=%{_datadir} SYSCONFDIR=%{_sysconfdir}
-mkdir -p %{buildroot}/lib
-mv %{buildroot}%{_prefix}/lib/systemd %{buildroot}/lib
 
 %files
 %doc README.md ChangeLog
