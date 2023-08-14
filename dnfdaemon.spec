@@ -6,7 +6,7 @@ License:	GPLv2+
 Group:		System/Configuration
 Url:		https://github.com/manatools/dnfdaemon
 Source0:	https://github.com/manatools/dnfdaemon/releases/download/dnfdaemon-%{version}/dnfdaemon-%{version}.tar.xz
-Patch0:		dnfdaemon-0.3.20-python-3.10+.patch
+#Patch0:		dnfdaemon-0.3.20-python-3.10+.patch
 BuildArch:	noarch
 BuildRequires:	pkgconfig(python3)
 BuildRequires:	make
